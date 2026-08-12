@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Zona Karvonen & Panduan Berlari</title>
+    
+    <!-- Menggunakan Tailwind CSS untuk styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Import Font Oswald (Heading) dan Inter (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 - Latar belakang gelap utama */
+            color: #f8fafc; /* Slate 50 - Warna teks utama */
+            line-height: 1.6;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Oswald', sans-serif;
+        }
+        
+        /* Custom styling untuk input range (slider) agar cocok dengan tema Neon Orange */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #f97316; /* Orange 500 */
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.6);
+            border: 2px solid #fff;
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #334155; /* Slate 700 */
+            border-radius: 4px;
+        }
+        
+        /* Animasi masuk untuk hasil kalkulasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col items-center overflow-x-hidden">
+
+    <!-- Seksi 1: Hero & Pengantar -->
+    <section class="w-full pt-20 pb-16 px-4 flex flex-col items-center justify-center min-h-[70vh] bg-gradient-to-b from-slate-900 to-slate-800">
+        <header class="max-w-4xl w-full text-center">
+            <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 tracking-wide uppercase leading-tight">
+                Ketahui Batasmu,<br/> <span class="text-orange-500 drop-shadow-[0_0_15px_rgba(249,115,22,0.4)]">Temukan Zona Lari Terbaikmu</span>
+            </h1>
+            <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+                Ketahui detak jantungmu menggunakan Metode Karvonen (gold standard). Hitung target zona latihan yang akurat dan dipersonalisasi berdasarkan kondisi istirahat tubuhmu.
+            </p>
+            
+            <!-- Call to Action (CTA) Button -->
+            <a href="#kalkulator-section" class="inline-flex items-center gap-3 bg-transparent border-2 border-orange-500 text-orange-400 hover:bg-orange-500 hover:text-white font-heading text-xl font-medium px-8 py-4 rounded-full transition-all duration-300 uppercase tracking-widest shadow-[0_0_15px_rgba(249,115,22,0.2)] hover:shadow-[0_0_25px_rgba(249,115,22,0.5)]">
+                Mulai Hitung
+                <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+            </a>
+        </header>
+    </section>
+
+    <!-- Seksi 2: Interaksi Inti (Kalkulator Karvonen) -->
+    <section id="kalkulator-section" class="w-full py-16 px-4 bg-slate-900 flex justify-center border-t border-slate-800/50">
+        <main class="max-w-5xl w-full bg-slate-800/80 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-slate-700 flex flex-col md:flex-row">
+            
+            <!-- Area Input (Kiri) -->
+            <div class="p-8 md:p-10 md:w-5/12 bg-slate-800/60 border-b md:border-b-0 md:border-r border-slate-700">
+                <h2 class="text-3xl font-heading font-semibold mb-8 text-orange-500 tracking-wide">MASUKKAN DATA</h2>
+                
+                <!-- Error Message Box -->
+                <div id="error-box" class="hidden mb-6 p-4 bg-red-900/40 border-l-4 border-red-500 text-red-200 rounded-r-lg text-sm font-medium"></div>
+
+                <div class="mb-8">
+                    <label for="age" class="block text-sm font-medium text-slate-300 mb-3 uppercase tracking-wider">Usia (Tahun)</label>
+                    <input type="number" id="age" min="10" max="100" placeholder="Contoh: 25" 
+                        class="w-full bg-slate-900 border border-slate-600 rounded-xl px-5 py-4 text-white text-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/50 transition-all">
+                </div>
+
+                <div class="mb-10">
+                    <div class="flex justify-between items-end mb-3">
+                        <label for="rhr" class="block text-sm font-medium text-slate-300 uppercase tracking-wider">Resting Heart Rate (BPM)</label>
+                        <span id="rhr-display" class="text-3xl font-heading text-orange-400 font-bold drop-shadow-md">60</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-5 leading-relaxed">Detak jantung per menit saat kamu baru bangun tidur atau dalam keadaan istirahat penuh.</p>
+                    <input type="range" id="rhr" min="40" max="100" value="60" class="w-full">
+                    <div class="flex justify-between text-xs text-slate-600 mt-2 font-medium">
+                        <span>40 BPM</span>
+                        <span>100 BPM</span>
+                    </div>
+                </div>
+
+                <button id="calculate-btn" 
+                    class="w-full bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white font-heading text-2xl font-semibold py-4 rounded-xl shadow-[0_4px_20px_rgba(249,115,22,0.4)] hover:shadow-[0_6px_25px_rgba(249,115,22,0.6)] transform hover:-translate-y-1 transition-all duration-300 uppercase tracking-widest">
+                    Hitung Zona
+                </button>
+            </div>
+
+            <!-- Area Hasil (Kanan) -->
+            <div class="p-8 md:p-10 md:w-7/12 bg-slate-900 relative">
+                
+                <!-- Tampilan awal sebelum dihitung -->
+                <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500 p-8 text-center h-full">
+                    <div class="bg-slate-800/50 p-6 rounded-full mb-6 border border-slate-700/50">
+                        <svg class="w-16 h-16 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-heading text-slate-400 mb-2">Menunggu Data...</h3>
+                    <p class="max-w-xs mx-auto text-sm">Masukkan usia dan detak jantung istirahat (RHR) di sebelah kiri, lalu tekan "Hitung Zona".</p>
+                </div>
+
+                <!-- Tampilan Hasil -->
+                <div id="result-state" class="hidden h-full flex flex-col">
+                    <h2 class="text-3xl font-heading font-semibold mb-6 text-white tracking-wide flex items-center gap-3">
+                        HASIL KALKULASI
+                        <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    </h2>
+                    
+                    <!-- Info Summary -->
+                    <div class="flex gap-4 mb-8">
+                        <div class="bg-slate-800 rounded-xl p-5 flex-1 border border-slate-700 shadow-inner">
+                            <p class="text-xs text-slate-400 uppercase tracking-wider mb-2 font-semibold">Max HR (Perkiraan)</p>
+                            <p class="text-3xl font-heading font-bold text-white"><span id="res-maxhr">0</span> <span class="text-sm text-slate-500 font-normal font-sans">BPM</span></p>
+                        </div>
+                        <div class="bg-slate-800 rounded-xl p-5 flex-1 border border-slate-700 shadow-inner">
+                            <p class="text-xs text-slate-400 uppercase tracking-wider mb-2 font-semibold">HR Reserve (HRR)</p>
+                            <p class="text-3xl font-heading font-bold text-white"><span id="res-hrr">0</span> <span class="text-sm text-slate-500 font-normal font-sans">BPM</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Zona -->
+                    <div class="overflow-x-auto rounded-xl border border-slate-700 bg-slate-800/80 shadow-lg">
+                        <table class="w-full text-left text-sm md:text-base">
+                            <thead class="bg-slate-900/80 text-slate-300 uppercase font-heading tracking-wider border-b border-slate-700">
+                                <tr>
+                                    <th class="px-5 py-4 w-1/3">Zona Latihan</th>
+                                    <th class="px-5 py-4 w-1/4">Intensitas</th>
+                                    <th class="px-5 py-4 text-right">Target (BPM)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="zones-tbody" class="divide-y divide-slate-700/50">
+                                <!-- Baris tabel akan di-generate oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-auto pt-6 flex items-start gap-3">
+                        <svg class="w-5 h-5 text-slate-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p class="text-xs text-slate-400 italic">
+                            Tabel ini terstruktur bersih. Anda bisa langsung memblok (select all) tabel ini dan melakukan copy-paste ke aplikasi Excel atau Google Sheets.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- Seksi 3: Modul Edukasi & Realita Lapangan -->
+    <section class="w-full bg-slate-900 py-20 px-4">
+        <div class="max-w-4xl mx-auto">
+            
+            <!-- Edukasi Detak Jantung -->
+            <div class="mb-16">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-white mb-6 uppercase tracking-wide border-l-4 border-orange-500 pl-4">
+                    Memahami Zona Detak Jantung: <br><span class="text-orange-500">Kunci Berolahraga Cerdas</span>
+                </h2>
+                <p class="text-slate-300 text-lg mb-8 leading-relaxed">
+                    Mengetahui detak jantung bukan sekadar soal angka, tapi tentang memahami sinyal tubuhmu. Berikut adalah 5 zona latihan dan fungsinya:
+                </p>
+
+                <div class="space-y-6">
+                    <!-- Zona 1 -->
+                    <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 hover:border-slate-500 transition-colors">
+                        <h3 class="text-xl font-heading font-semibold text-slate-300 mb-2">Zona 1 (50-60% Max HR) - Pemulihan</h3>
+                        <p class="text-slate-400">Ini adalah zona paling santai. Sangat ideal untuk pemanasan, pendinginan, atau lari santai untuk memulihkan otot yang kaku setelah latihan berat. Tubuh tidak mengalami stres yang berarti di zona ini.</p>
+                    </div>
+                    <!-- Zona 2 -->
+                    <div class="bg-slate-800/50 p-6 rounded-xl border border-sky-900/50 hover:border-sky-500 transition-colors relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-sky-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">Paling Penting</div>
+                        <h3 class="text-xl font-heading font-semibold text-sky-400 mb-2">Zona 2 (60-70% Max HR) - Ketahanan (Fat Burn)</h3>
+                        <p class="text-slate-400"><strong class="text-slate-200">Fondasi utama setiap pelari!</strong> Di sinilah kamu membangun <em>aerobic base</em> (daya tahan jantung dan paru-paru) dan melatih tubuh agar efisien membakar lemak sebagai sumber energi. <br><span class="text-sky-300/80 italic mt-2 inline-block">Ciri utamanya: kamu harus bisa lari sambil mengobrol dengan lancar.</span></p>
+                    </div>
+                    <!-- Zona 3 -->
+                    <div class="bg-slate-800/50 p-6 rounded-xl border border-emerald-900/50 hover:border-emerald-500 transition-colors">
+                        <h3 class="text-xl font-heading font-semibold text-emerald-400 mb-2">Zona 3 (70-80% Max HR) - Aerobik</h3>
+                        <p class="text-slate-400">Lari mulai terasa menantang. Napas menjadi lebih cepat dan berbicara mulai agak susah (hanya bisa kalimat pendek). Latihan di zona ini bagus untuk melancarkan sirkulasi darah dan membiasakan tubuh pada intensitas menengah.</p>
+                    </div>
+                    <!-- Zona 4 -->
+                    <div class="bg-slate-800/50 p-6 rounded-xl border border-amber-900/50 hover:border-amber-500 transition-colors">
+                        <h3 class="text-xl font-heading font-semibold text-amber-400 mb-2">Zona 4 (80-90% Max HR) - Anaerobik</h3>
+                        <p class="text-slate-400">Memasuki zona latihan keras (tempo run). Otot mulai terasa pegal karena adanya penumpukan asam laktat. Latihan di sini berguna untuk meningkatkan ambang batas kecepatan larimu, namun tidak boleh dilakukan setiap hari.</p>
+                    </div>
+                    <!-- Zona 5 -->
+                    <div class="bg-slate-800/50 p-6 rounded-xl border border-rose-900/50 hover:border-rose-500 transition-colors">
+                        <h3 class="text-xl font-heading font-semibold text-rose-500 mb-2">Zona 5 (90-100% Max HR) - Maksimal</h3>
+                        <p class="text-slate-400">Upaya habis-habisan alias sprint. Ini adalah intensitas maksimal yang biasanya hanya sanggup dipertahankan tubuh selama beberapa detik hingga maksimal 1-2 menit.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualisasi Piramida -->
+            <div class="mb-16 bg-slate-800 p-8 md:p-12 rounded-3xl border border-slate-700">
+                <h3 class="text-2xl font-heading font-bold text-center text-white mb-8 uppercase tracking-wide">Piramida Zona Latihan Ideal</h3>
+                <p class="text-center text-slate-400 mb-10 text-sm md:text-base max-w-2xl mx-auto">
+                    Visualisasi piramida ini mengadaptasi teori keolahragaan <strong>polarized training (rasio 80/20)</strong>. Secara konsep, 80% volume latihan harus difokuskan pada intensitas rendah (Zona 1 & 2) untuk membangun fondasi aerobik, sedangkan sisa 20% dialokasikan untuk intensitas tinggi (Zona 4 & 5) guna meningkatkan performa tanpa risiko <em>overtraining</em>.
+                </p>
+                
+                <!-- Grafik Piramida CSS -->
+                <div class="flex flex-col items-center justify-end w-full max-w-lg mx-auto font-heading tracking-wider font-semibold">
+                    <!-- Zona 5 (Pucuk) -->
+                    <div class="w-[30%] bg-gradient-to-r from-rose-700 to-rose-500 text-white text-center py-2 md:py-3 rounded-t-lg shadow-lg relative group transition-all duration-300 hover:w-[35%] cursor-default">
+                        ZONA 5 <span class="hidden md:inline-block font-sans font-normal text-xs ml-1 bg-black/20 px-2 py-0.5 rounded">&lt;5%</span>
+                        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max px-3 py-1 bg-slate-900 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Kecepatan Maksimal</div>
+                    </div>
+                    <!-- Zona 4 -->
+                    <div class="w-[50%] bg-gradient-to-r from-amber-600 to-amber-500 text-white text-center py-2 md:py-3 shadow-lg mt-0.5 relative group transition-all duration-300 hover:w-[55%] cursor-default">
+                        ZONA 4 <span class="hidden md:inline-block font-sans font-normal text-xs ml-1 bg-black/20 px-2 py-0.5 rounded">5% - 10%</span>
+                        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max px-3 py-1 bg-slate-900 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Ambang Laktat</div>
+                    </div>
+                    <!-- Zona 3 -->
+                    <div class="w-[70%] bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-center py-3 md:py-4 shadow-lg mt-0.5 relative group transition-all duration-300 hover:w-[75%] cursor-default">
+                        ZONA 3 <span class="hidden md:inline-block font-sans font-normal text-xs ml-1 bg-black/20 px-2 py-0.5 rounded">10% - 15%</span>
+                        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max px-3 py-1 bg-slate-900 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Kapasitas Aerobik</div>
+                    </div>
+                    <!-- Zona 2 -->
+                    <div class="w-[90%] bg-gradient-to-r from-sky-600 to-sky-500 text-white text-center py-4 md:py-6 shadow-lg mt-0.5 relative group transition-all duration-300 hover:w-[95%] cursor-default">
+                        ZONA 2 <span class="hidden md:inline-block font-sans font-normal text-xs ml-1 bg-black/20 px-2 py-0.5 rounded">70% - 80%</span>
+                        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max px-3 py-1 bg-slate-900 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Membangun Fondasi Endurance</div>
+                    </div>
+                    <!-- Zona 1 (Dasar) -->
+                    <div class="w-full bg-gradient-to-r from-slate-600 to-slate-500 text-white text-center py-4 md:py-5 rounded-b-lg shadow-lg mt-0.5 relative group transition-all duration-300 hover:w-[102%] cursor-default">
+                        ZONA 1 <span class="hidden md:inline-block font-sans font-normal text-xs ml-1 bg-black/20 px-2 py-0.5 rounded">Sesuai Kebutuhan</span>
+                        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max px-3 py-1 bg-slate-900 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Pemulihan Aktif</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Realita Lapangan (Blockquote Style) -->
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-8 md:p-12 border-2 border-slate-700 relative overflow-hidden shadow-2xl">
+                <!-- Aksen Dekoratif -->
+                <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl transform translate-x-10 -translate-y-10"></div>
+                
+                <h2 class="text-2xl md:text-3xl font-heading font-bold text-orange-400 mb-6 uppercase tracking-wider relative z-10">
+                    SUSAH LATIHAN DI ZONA 2? <br class="md:hidden">MUSUHNYA BUKAN ORANG LAIN, TAPI EGO KITA SENDIRI.
+                </h2>
+                
+                <div class="text-slate-300 space-y-4 relative z-10 leading-relaxed">
+                    <p>
+                        Secara teori, latihan Zona 2 itu mudah: cukup lari pelan. Namun, di lapangan, menahan diri untuk berlari pelan sering kali menjadi tantangan mental terbesar.
+                    </p>
+                    <p>
+                        Saat ikut jadwal lari bareng komunitas misalnya saat morning run bersama teman-teman, niat awal dari rumah mungkin sekadar recovery run yang santai. Namun, begitu melihat rekan di depan menambah kecepatan atau ada pelari lain menyalip, ego biasanya langsung terpancing. Tanpa sadar, langkah kaki dipercepat, detak jantung melonjak ke Zona 4, dan rencana latihan pun berantakan.
+                    </p>
+                    <p>
+                        Belum lagi godaan dari aplikasi pelacak olahraga. Keinginan agar pace lari terlihat keren dan cepat saat diunggah ke feed Strava sering kali membuat kita memaksakan diri di setiap sesi. Padahal, berlari terlalu cepat secara terus-menerus (overtraining) tidak akan membuatmu lebih cepat, melainkan justru meningkatkan risiko cedera dan membuat tubuh kelelahan.
+                    </p>
+                </div>
+
+                <div class="mt-8 bg-slate-900/80 p-6 rounded-xl border border-slate-700 relative z-10">
+                    <h4 class="font-heading text-xl text-white mb-4 uppercase tracking-wide">💡 Tips Menjaga Pace dan Ego:</h4>
+                    <ul class="space-y-4 text-slate-300">
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-3 mt-1">✓</span>
+                            <div><strong>Pegang Prinsip "Lari Sambil Ngobrol":</strong> Jika napasmu mulai putus-putus dan kamu tidak bisa menyelesaikan satu kalimat utuh saat mengobrol dengan teman lari, itu artinya kamu sudah keluar dari Zona 2. Segera kurangi kecepatan.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-3 mt-1">✓</span>
+                            <div><strong>Fokus pada Smartwatch, Bukan Punggung Orang Lain:</strong> Percayalah pada data detak jantungmu sendiri. Biarkan rombongan melaju lebih dulu jika pace mereka memang membuat detak jantungmu merangkak naik ke zona merah.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-orange-500 mr-3 mt-1">✓</span>
+                            <div><strong>Terima Kenyataan Bahwa "Lambat Itu Baik":</strong> Ingatlah pedoman rasio 80/20. Bahkan pelari maraton profesional sekalipun menghabiskan 80% waktu latihan mereka di zona yang lambat dan sangat nyaman.</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="w-full bg-slate-950 py-8 border-t border-slate-800 text-center">
+        <p class="text-slate-500 text-sm font-medium">
+            &copy; 2026 Kalkulator Zona Karvonen. Dirancang untuk pelari yang cerdas.
+        </p>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const ageInput = document.getElementById('age');
+        const rhrInput = document.getElementById('rhr');
+        const rhrDisplay = document.getElementById('rhr-display');
+        const calcBtn = document.getElementById('calculate-btn');
+        const errorBox = document.getElementById('error-box');
+        
+        const emptyState = document.getElementById('empty-state');
+        const resultState = document.getElementById('result-state');
+        
+        const resMaxHR = document.getElementById('res-maxhr');
+        const resHRR = document.getElementById('res-hrr');
+        const zonesTbody = document.getElementById('zones-tbody');
+
+        // Update nilai slider ke teks secara realtime
+        rhrInput.addEventListener('input', (e) => {
+            rhrDisplay.textContent = e.target.value;
+        });
+
+        // Definisi persentase zona Karvonen beserta styling warna per baris
+        const zonesDefinition = [
+            { name: "Zona 1 (Pemulihan)", min: 0.50, max: 0.60, colorText: "text-slate-400", bgColor: "hover:bg-slate-700/30" },
+            { name: "Zona 2 (Ketahanan/Lemak)", min: 0.60, max: 0.70, colorText: "text-sky-400", bgColor: "bg-sky-900/10 hover:bg-sky-900/30 border-l-2 border-sky-500" }, // Zona 2 di-highlight sedikit
+            { name: "Zona 3 (Aerobik)", min: 0.70, max: 0.80, colorText: "text-emerald-400", bgColor: "hover:bg-slate-700/30" },
+            { name: "Zona 4 (Anaerobik)", min: 0.80, max: 0.90, colorText: "text-amber-400", bgColor: "hover:bg-slate-700/30" },
+            { name: "Zona 5 (Maksimal)", min: 0.90, max: 1.00, colorText: "text-rose-500", bgColor: "hover:bg-slate-700/30" }
+        ];
+
+        // Fungsi utama kalkulasi
+        calcBtn.addEventListener('click', () => {
+            const age = parseInt(ageInput.value);
+            const rhr = parseInt(rhrInput.value);
+
+            // 1. Validasi Input
+            if (isNaN(age) || age < 5 || age > 120) {
+                errorBox.innerHTML = "<strong>Ups!</strong> Mohon masukkan usia yang valid (5 - 120 tahun).";
+                errorBox.classList.remove('hidden');
+                emptyState.classList.remove('hidden');
+                resultState.classList.add('hidden');
+                return;
+            }
+            
+            // Sembunyikan error jika valid
+            errorBox.classList.add('hidden');
+
+            // 2. Hitung Maximum Heart Rate (Max HR) standar (Rumus Fox/Haskell)
+            const maxHR = 220 - age;
+            
+            // 3. Hitung Heart Rate Reserve (HRR)
+            const hrr = maxHR - rhr;
+
+            // Validasi logika biologis
+            if (hrr <= 0) {
+                errorBox.innerHTML = "<strong>Data tidak lazim:</strong> Resting Heart Rate terlalu tinggi untuk usiamu, perhitungan tidak valid.";
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            // Tampilkan summary angka
+            resMaxHR.textContent = maxHR;
+            resHRR.textContent = hrr;
+
+            // 4. Kalkulasi 5 Zona & render tabel
+            zonesTbody.innerHTML = ""; // Bersihkan tabel sebelumnya
+
+            zonesDefinition.forEach(zone => {
+                // Rumus Karvonen: (HRR * Persentase) + RHR
+                const targetMin = Math.round((hrr * zone.min) + rhr);
+                const targetMax = Math.round((hrr * zone.max) + rhr);
+                
+                const intensityText = `${Math.round(zone.min * 100)}% - ${Math.round(zone.max * 100)}%`;
+
+                const tr = document.createElement('tr');
+                tr.className = `transition-colors duration-200 ${zone.bgColor || 'hover:bg-slate-700/30'}`;
+                
+                // Jika ini Zona 2, tambahkan badge khusus
+                const zoneNameHtml = zone.name.includes("Zona 2") 
+                    ? `<div class="font-bold ${zone.colorText}">${zone.name}</div><div class="text-[10px] bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded inline-block mt-1 uppercase tracking-wider">Target Utama</div>` 
+                    : `<div class="font-medium ${zone.colorText}">${zone.name}</div>`;
+
+                tr.innerHTML = `
+                    <td class="px-5 py-4 border-b border-slate-700/50">
+                        ${zoneNameHtml}
+                    </td>
+                    <td class="px-5 py-4 text-slate-300 font-mono text-sm border-b border-slate-700/50">
+                        ${intensityText}
+                    </td>
+                    <td class="px-5 py-4 text-right border-b border-slate-700/50">
+                        <div class="font-heading text-xl text-white font-semibold tracking-wide">
+                            ${targetMin} <span class="text-slate-500 font-normal text-sm font-sans mx-1">-</span> ${targetMax}
+                        </div>
+                    </td>
+                `;
+                zonesTbody.appendChild(tr);
+            });
+
+            // 5. Transisi UI (Sembunyikan state kosong, munculkan hasil)
+            emptyState.classList.add('hidden');
+            resultState.classList.remove('hidden');
+            
+            // Hapus dan tambahkan ulang class animasi untuk me-reset animasi jika tombol ditekan berkali-kali
+            resultState.classList.remove('animate-fade-in');
+            void resultState.offsetWidth; // Trigger reflow
+            resultState.classList.add('animate-fade-in');
+        });
+    </script>
+</body>
+</html>
